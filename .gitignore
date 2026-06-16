@@ -1,0 +1,26 @@
+# Binários
+bin/
+*.exe
+*.out
+gemm_cpu
+gemm_cuda
+
+# Objetos e bibliotecas
+*.o
+*.a
+*.so
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Resultados de experimentos (opcional: remova se quiser commitar os resultados)
+# experiments/results/*.csv
+# experiments/reports/*.txt
+
+# Arquivos temporários de editores
+.vscode/
+.idea/
+*.swp
+*~
