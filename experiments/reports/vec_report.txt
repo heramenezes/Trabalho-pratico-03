@@ -1,0 +1,4 @@
+../src/cpu/gemm_cpu.c:83:31: optimized: loop vectorized using 32 byte vectors
+../src/cpu/gemm_cpu.c:83:31: optimized: loop vectorized using 16 byte vectors
+../src/cpu/gemm_cpu.c:83:31: optimized: loop vectorized using 32 byte vectors
+../src/cpu/gemm_cpu.c:83:31: optimized: loop vectorized using 16 byte vectors
