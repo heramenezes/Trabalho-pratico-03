@@ -98,12 +98,11 @@ void multiplicar_blocked(int N, int BS, const float *A, const float *B, float *C
                 int k_max = (k0 + BS > N) ? N : k0 + BS;
 
                 for (int i = i0; i < i_max; i++) {
-                    for (int j = j0; j < j_max; j++) {
-                        float soma = 0.0f;
-                        for (int k = k0; k < k_max; k++) {
-                            soma += A[i*N + k] * B[k*N + j];
+                    for (int k = k0; k < k_max; k++) {
+                        float a_ik = A[i*N + k];
+                        for (int j = j0; j < j_max; j++) {
+                            C[i*N + j] += a_ik * B[k*N + j];
                         }
-                        C[i*N + j] += soma;
                     }
                 }
             }
@@ -114,12 +113,11 @@ void multiplicar_blocked(int N, int BS, const float *A, const float *B, float *C
 void multiplicar_openmp(int N, const float *A, const float *B, float *C) {
     #pragma omp parallel for
     for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            float soma = 0.0f;
-            for (int k = 0; k < N; k++) {
-                soma += A[i*N + k] * B[k*N + j];
+        for (int k = 0; k < N; k++) {
+            float a_ik = A[i*N + k];
+            for (int j = 0; j < N; j++) {
+                C[i*N + j] += a_ik * B[k*N + j];
             }
-            C[i*N + j] = soma;
         }
     }
 }
@@ -134,12 +132,11 @@ void multiplicar_blocked_openmp(int N, int BS, const float *A, const float *B, f
                 int k_max = (k0 + BS > N) ? N : k0 + BS;
 
                 for (int i = i0; i < i_max; i++) {
-                    for (int j = j0; j < j_max; j++) {
-                        float soma = 0.0f;
-                        for (int k = k0; k < k_max; k++) {
-                            soma += A[i*N + k] * B[k*N + j];
+                    for (int k = k0; k < k_max; k++) {
+                        float a_ik = A[i*N + k];
+                        for (int j = j0; j < j_max; j++) {
+                            C[i*N + j] += a_ik * B[k*N + j];
                         }
-                        C[i*N + j] += soma;
                     }
                 }
             }
