@@ -104,18 +104,7 @@ static double erro_maximo_absoluto(int N, const float *A, const float *B) {
     return erro;
 }
 
-/* Referência CPU para validação enquanto gemm_cpu não está disponível como biblioteca. */
-static void multiplicar_naive_ref(int N, const float *A, const float *B, float *C) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            float soma = 0.0f;
-            for (int k = 0; k < N; k++) {
-                soma += A[i * N + k] * B[k * N + j];
-            }
-            C[i * N + j] = soma;
-        }
-    }
-}
+extern "C" void multiplicar_naive(int N, const float *A, const float *B, float *C);
 
 // -----------------------------------------------------------------------
 // Main
@@ -199,8 +188,8 @@ int main(int argc, char **argv) {
         t_d2h += obter_segundos() - t0;
     }
 
-    // Validação contra referência CPU
-    multiplicar_naive_ref(N, h_A, h_B, h_ref);
+    // Validação contra referência CPU (Issue #1)
+    multiplicar_naive(N, h_A, h_B, h_ref);
     double erro = erro_maximo_absoluto(N, h_C, h_ref);
 
     printf("versao=%s N=%d repeticoes=%d t_h2d=%.6f t_kernel=%.6f t_d2h=%.6f erro_max=%.6e\n",

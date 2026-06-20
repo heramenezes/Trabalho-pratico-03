@@ -93,6 +93,7 @@ void multiplicar_transposed(int N, const float *A, const float *BT, float *C) {
 // TODO: Implementar multiplicar_openmp(int N, const float *A, const float *B, float *C)
 // TODO: Implementar multiplicar_blocked_openmp(int N, int BS, const float *A, const float *B, float *C)
 
+#ifndef GEMM_CPU_LIB
 int main(int argc, char **argv) {
     // TODO: Implementar a lógica de medição de tempo e execução dos experimentos.
     // Utilizar os argumentos: <versao> <N> <repeticoes> [BS]
@@ -166,3 +167,4 @@ int main(int argc, char **argv) {
 
     return 0;
 }
+#endif /* GEMM_CPU_LIB */

@@ -11,16 +11,21 @@ GPU_SRC = ../src/gpu/gemm_cuda.cu
 
 CPU_BIN = ../bin/gemm_cpu
 GPU_BIN = ../bin/gemm_cuda
+CPU_OBJ = ../bin/gemm_cpu_lib.o
 
 all: cpu gpu
 
 cpu:
 	mkdir -p ../bin
-	$(CC) $(CFLAGS) $(CPU_SRC) -o $(CPU_BIN) 2> ../experiments/reports/vec_report.txt
+	$(CC) $(CFLAGS) $(CPU_SRC) -o $(CPU_BIN) -lm 2> ../experiments/reports/vec_report.txt
 
-gpu:
+$(CPU_OBJ):
 	mkdir -p ../bin
-	$(NVCC) $(CUDAFLAGS) $(GPU_SRC) -o $(GPU_BIN)
+	$(CC) -c -DGEMM_CPU_LIB -O3 $(CPU_SRC) -o $(CPU_OBJ) -lm
+
+gpu: $(CPU_OBJ)
+	mkdir -p ../bin
+	$(NVCC) $(CUDAFLAGS) $(GPU_SRC) $(CPU_OBJ) -o $(GPU_BIN) -lm
 
 clean:
 	rm -rf ../bin
