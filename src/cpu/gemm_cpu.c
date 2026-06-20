@@ -89,9 +89,63 @@ void multiplicar_transposed(int N, const float *A, const float *BT, float *C) {
     }
 }
 
-// TODO: Implementar multiplicar_blocked(int N, int BS, const float *A, const float *B, float *C)
-// TODO: Implementar multiplicar_openmp(int N, const float *A, const float *B, float *C)
-// TODO: Implementar multiplicar_blocked_openmp(int N, int BS, const float *A, const float *B, float *C)
+void multiplicar_blocked(int N, int BS, const float *A, const float *B, float *C) {
+    for (int i0 = 0; i0 < N; i0 += BS) {
+        for (int j0 = 0; j0 < N; j0 += BS) {
+            for (int k0 = 0; k0 < N; k0 += BS) {
+                int i_max = (i0 + BS > N) ? N : i0 + BS;
+                int j_max = (j0 + BS > N) ? N : j0 + BS;
+                int k_max = (k0 + BS > N) ? N : k0 + BS;
+
+                for (int i = i0; i < i_max; i++) {
+                    for (int j = j0; j < j_max; j++) {
+                        float soma = 0.0f;
+                        for (int k = k0; k < k_max; k++) {
+                            soma += A[i*N + k] * B[k*N + j];
+                        }
+                        C[i*N + j] += soma;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void multiplicar_openmp(int N, const float *A, const float *B, float *C) {
+    #pragma omp parallel for
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            float soma = 0.0f;
+            for (int k = 0; k < N; k++) {
+                soma += A[i*N + k] * B[k*N + j];
+            }
+            C[i*N + j] = soma;
+        }
+    }
+}
+
+void multiplicar_blocked_openmp(int N, int BS, const float *A, const float *B, float *C) {
+    #pragma omp parallel for collapse(2)
+    for (int i0 = 0; i0 < N; i0 += BS) {
+        for (int j0 = 0; j0 < N; j0 += BS) {
+            for (int k0 = 0; k0 < N; k0 += BS) {
+                int i_max = (i0 + BS > N) ? N : i0 + BS;
+                int j_max = (j0 + BS > N) ? N : j0 + BS;
+                int k_max = (k0 + BS > N) ? N : k0 + BS;
+
+                for (int i = i0; i < i_max; i++) {
+                    for (int j = j0; j < j_max; j++) {
+                        float soma = 0.0f;
+                        for (int k = k0; k < k_max; k++) {
+                            soma += A[i*N + k] * B[k*N + j];
+                        }
+                        C[i*N + j] += soma;
+                    }
+                }
+            }
+        }
+    }
+}
 
 int main(int argc, char **argv) {
     // TODO: Implementar a lógica de medição de tempo e execução dos experimentos.
@@ -105,6 +159,11 @@ int main(int argc, char **argv) {
     const char *versao = argv[1];
     int N = atoi(argv[2]);
     int repeticoes = atoi(argv[3]);
+
+    int BS = 64;
+    if (argc >= 5) {
+        BS = atoi(argv[4]);
+    }
 
     size_t bytes = sizeof(float) * N * N;
 
@@ -141,6 +200,15 @@ int main(int argc, char **argv) {
             transpor_matriz(N, B, BT);
             multiplicar_transposed(N, A, BT, C);
         } 
+        else if (strcmp(versao, "blocked") == 0) {
+            multiplicar_blocked(N, BS, A, B, C);
+        }
+        else if (strcmp(versao, "openmp") == 0) {
+            multiplicar_openmp(N, A, B, C);
+        }
+        else if (strcmp(versao, "blocked_openmp") == 0) {
+            multiplicar_blocked_openmp(N, BS, A, B, C);
+        }
         else {
             printf("Versao nao implementada nesta issue: %s\n", versao);
             return 1;
